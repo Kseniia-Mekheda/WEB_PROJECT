@@ -7,7 +7,7 @@ const Profile = () => {
     const handleLogout = async () => {
         try {
             await authService.logout(); 
-            navigate('/login');
+            navigate('/');
 
         } catch (error) {
             console.error('Logout failed:', error);

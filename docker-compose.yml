@@ -26,6 +26,26 @@ services:
       - mongo 
     networks: 
       - main_network
+    
+  worker:
+    build: ./backend
+    command: npm run worker 
+    environment:
+      MONGO_URL: ${MONGO_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - main_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - main_network
   
   mongo:
     image: mongo:latest 

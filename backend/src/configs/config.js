@@ -8,7 +8,9 @@ const config = {
     MONGO_PORT: process.env.MONGO_PORT, 
     JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN
+    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT
 };
 
 module.exports = { config };

@@ -77,6 +77,10 @@ const Signup = () => {
             <Button type="submit" variant="contained" size="large" fullWidth>
                 Signup
             </Button>
+
+            <Typography variant="body2" color="textSecondary">
+                Already have an account? Login <a href="/login">here</a>.
+            </Typography>
       
             {message && (
                 <Alert severity={error ? 'error' : 'success'} sx={{ mt: 2 }}>
