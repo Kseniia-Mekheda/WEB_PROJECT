@@ -28,6 +28,7 @@ const Login = () => {
 
         try {
             const data = await authService.login(userData);
+            setMessage(data.message);
             navigate('/profile');
         } catch (error) {
             setMessage(error.message);

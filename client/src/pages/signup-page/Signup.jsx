@@ -29,6 +29,7 @@ const Signup = () => {
 
         try {
             const data = await authService.signup(userData);
+            setMessage(data.message);
             navigate('/profile');
         } catch (error) {
             setMessage(error.message);
