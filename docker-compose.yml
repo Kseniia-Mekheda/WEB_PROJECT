@@ -22,6 +22,8 @@ services:
       CLIENT_PORT: ${CLIENT_PORT}
       BACKEND_PORT: ${BACKEND_PORT}
       CLIENT_URL: ${CLIENT_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       - mongo 
     networks: 
