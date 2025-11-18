@@ -1,5 +1,6 @@
 const { Queue } = require('bullmq');
 const { config } = require('~/configs/config');
+const crypto = require('crypto');
 const task = require('../models/task');
 
 const connection = {
@@ -10,7 +11,10 @@ const connection = {
 const taskQueue = new Queue('taskQueue', { connection }); 
 
 const addTaskToQueue = async (taskData) => {
-    const job = await taskQueue.add('calculateTask', taskData);
+    const uniqueJobId = crypto.randomUUID();
+    const job = await taskQueue.add('calculate-primes', taskData, {
+      jobId: uniqueJobId 
+    });
     return job;
 };
 
