@@ -74,18 +74,17 @@ const cancelTask = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        if (task.status === 'completed' || task.status === 'failed') {
+        if (task.status === 'completed' || task.status === 'failed' || task.status === 'cancelled') {
              return res.status(400).json({ message: 'Task is already finished' });
         }
         const cancelled = await queueService.cancelJob(jobId);
         
-        if (cancelled) {
-            task.status = 'cancelled';
-            await task.save();
-            res.status(200).json({ message: 'Task cancelled', task });
-        } else {
-             res.status(404).json({ message: 'Task not in queue or already completed' });
+        if (!cancelled) {
+            return res.status(404).json({ message: 'Task not in queue or already completed' });
         }
+        task.status = 'cancelled';
+        await task.save();
+        res.status(200).json({ message: 'Task cancelled', task });
     } catch (error) {
          res.status(500).json({ message: 'Server error' });
     }

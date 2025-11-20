@@ -1,18 +1,18 @@
 const { Queue } = require('bullmq');
 const { config } = require('~/configs/config');
 const crypto = require('crypto');
-const task = require('../models/task');
 
 const connection = {
     host: config.REDIS_HOST,
-    port: config.REDIS_PORT
+    port: Number(config.REDIS_PORT)
 };
+const QUEUE_NAME = 'taskQueue';
 
-const taskQueue = new Queue('taskQueue', { connection }); 
+const taskQueue = new Queue(QUEUE_NAME, { connection }); 
 
-const addTaskToQueue = async (taskData) => {
+const addTaskToQueue = async (data) => {
     const uniqueJobId = crypto.randomUUID();
-    const job = await taskQueue.add('calculate-primes', taskData, {
+    const job = await taskQueue.add('calculate-primes', data, {
       jobId: uniqueJobId 
     });
     return job;
@@ -37,16 +37,26 @@ const getJobStatus = async (jobId) => {
 
 const cancelJob = async (jobId) => {
     const job = await taskQueue.getJob(jobId);
-    if (job && (await job.isWaiting() || await job.isActive())) {
+    if (!job) return { cancelled: false, wasActive: false };
+
+    const state = await job.getState();
+
+    if (['waiting', 'delayed', 'paused', 'waiting-children'].includes(state)) {
         await job.remove();
-        return true;
+        return { cancelled: true, wasActive: false };
     }
-    return false;
-}; 
+
+    if (state === 'active') {
+        return { cancelled: true, wasActive: true };
+    }
+
+    return { cancelled: false, wasActive: false };
+};
 
 module.exports = {
     taskQueue,
     addTaskToQueue,
     getJobStatus,
-    cancelJob
+    cancelJob,
+    QUEUE_NAME
 };

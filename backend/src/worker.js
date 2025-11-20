@@ -32,7 +32,8 @@ const worker = new Worker('taskQueue', async (job) => {
 
   await Task.updateOne({ jobId }, { status: 'processing' });
   let primeCount = 0; 
-  const reportInterval = Math.floor(number / 10);
+  const reportInterval = Math.max(1, Math.floor(number / 10));
+  const cancelCheckInterval = Math.max(1, Math.floor(number / 100));
   for (let i = 0; i <= number; ++i) {
     if (isPrime(i)) {
       ++primeCount;
@@ -42,6 +43,13 @@ const worker = new Worker('taskQueue', async (job) => {
       const progress = Math.floor((i / number) * 100); 
       await job.updateProgress(progress); 
       console.log(`[Worker] Job #${jobId} progress: ${progress}%`);
+    }
+
+    if (i % cancelCheckInterval === 0) {
+      const t = await Task.findOne({ jobId }).select('status');
+      if (t && t.status === 'cancelled') {
+        throw new Error('cancelled');
+      }
     }
   }
 
@@ -58,8 +66,11 @@ const worker = new Worker('taskQueue', async (job) => {
 }, { connection });
 
 worker.on('failed', async (job, err) => {
-  console.error(`[Worker] Job ${job?.id} failed with ${err.message}`);
-  if (job) {
-    await Task.updateOne({ jobId: job.id }, { status: 'failed' });
+  const reason = err?.message || '';
+  const jobId = job?.id;
+  console.error(`[Worker] Job ${jobId} failed with ${reason}`);
+  if (jobId) {
+    const status = reason === 'cancelled' ? 'cancelled' : 'failed';
+    await Task.updateOne({ jobId }, { status });
   }
 });
