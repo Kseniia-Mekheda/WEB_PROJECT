@@ -25,6 +25,24 @@ const createTask = async (req, res) => {
             return res.status(400).json({ message: `Task limit reached. Only ${MAX_CONCURRENT_TASKS} active tasks allowed.` });
         }
 
+        const jobCounts = await queueService.taskQueue.getJobCounts(); // waiting, active,...
+        const concurrency = Number(process.env.WORKER_CONCURRENCY || 1);
+
+        const stats = await Task.aggregate([
+            { $match: { status: 'completed', durationMs: { $gt: 0 } } },
+            { $sort: { createdAt: -1 } },
+            { $limit: 50 },
+            { $group: { _id: null, avgDuration: { $avg: '$durationMs' } } }
+        ]);
+        const avgDurationMs = Math.max(500, Math.floor(stats[0]?.avgDuration || 0));
+
+        const allBusy = jobCounts.active >= concurrency;
+        let etaMs = 0;
+        if (allBusy) {
+            const positionAhead = Math.max(0, jobCounts.waiting + (jobCounts.active - concurrency) + 1);
+            etaMs = positionAhead * avgDurationMs;
+        }
+
         const job = await queueService.addTaskToQueue({ number, userId });
 
         const task = await Task.create({
@@ -34,7 +52,14 @@ const createTask = async (req, res) => {
             status: 'pending'
         }); 
 
-        res.status(201).json({ message: 'Task accepted', task });
+        res.status(201).json({
+            message: allBusy
+                ? 'Task queued. All workers busy.'
+                : 'Task accepted',
+            task,
+            etaMs: allBusy ? etaMs : 0,
+            avgDurationMs
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }

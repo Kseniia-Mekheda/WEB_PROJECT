@@ -1,10 +1,15 @@
 import { useState } from 'react'; 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
+import InputAdornment from '@mui/material/InputAdornment';
+import Link from '@mui/material/Link';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
 import authService from '../../services/auth';
 
 const Login = () => {
@@ -37,48 +42,94 @@ const Login = () => {
     };
 
     return(
-        <Box
-            component='form'
-            onSubmit={onSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}
-        >
-            <Typography variant="h4" component="h1" gutterBottom>
-                Login
-            </Typography>
-            <TextField
-                label="Email Address"
-                name="email"
-                type="email"
-                value={email}
-                onChange={onFieldChange}
-                required
-                fullWidth
-            />
-            <TextField
-                label="Password (min 8 chars)"
-                name="password"
-                type="password"
-                value={password}
-                onChange={onFieldChange}
-                required
-                minLength={8}
-                fullWidth
-            />
+            <Paper
+                elevation={0}
+                sx={{
+                width: '100%',
+                maxWidth: 420,
+                p: 4,
+                borderRadius: 3,
+                border: '1px solid',
+                    borderColor: 'divider',
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                backdropFilter: 'blur(6px)'
+                }}
+            >
+                <Typography variant="h4" component="h1" fontWeight={700} gutterBottom>
+                    Login
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+                    Enter your credentials to access your dashboard.
+                </Typography>
 
-            <Button type="submit" variant="contained" size="large" fullWidth>
-                Login
-            </Button>
+                <Box component="form" onSubmit={onSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={onFieldChange}
+                    required
+                    fullWidth
+                    autoComplete="email"
+                    InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                        <EmailIcon fontSize="small" color="action" />
+                        </InputAdornment>
+                    )
+                    }}
+                />
+                <TextField
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={password}
+                    onChange={onFieldChange}
+                    required
+                    fullWidth
+                    autoComplete="current-password"
+                    inputProps={{ minLength: 8 }}
+                    InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                        <LockIcon fontSize="small" color="action" />
+                        </InputAdornment>
+                    )
+                    }}
+                />
 
-            <Typography variant="body2" color="textSecondary">
-                Don't have an account? Sign up <a href="/signup">here</a>.
-            </Typography>
-      
-            {message && (
-                <Alert severity={error ? 'error' : 'success'} sx={{ mt: 2 }}>
+                    <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{ mt: 1, py: 1.15, borderRadius: 2 }}
+                    >
+                    Log In
+                    </Button>
+                </Box>
+
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                    Don't have an account?{' '}
+                    <Link component={RouterLink} to="/signup" underline="hover">
+                    Sign up
+                    </Link>
+                </Typography>
+                </Box>
+
+                {message && (
+                <Alert
+                    severity={error ? 'error' : 'success'}
+                    variant="outlined"
+                    sx={{ mt: 3 }}
+                    onClose={() => setMessage('')}
+                >
                     {message}
                 </Alert>
-            )}
-        </Box>
+                )}
+            </Paper>
     )
 }
 export default Login;
