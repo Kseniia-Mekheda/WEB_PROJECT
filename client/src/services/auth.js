@@ -16,6 +16,7 @@ const signup = async (userData) => {
 
         if (response.data.accessToken) {
             localStorage.setItem('accessToken', response.data.accessToken);
+            localStorage.setItem('currentUser', JSON.stringify(response.data.user));
         }
 
         return response.data;
@@ -34,6 +35,7 @@ const login = async (userData) => {
 
         if (response.data.accessToken) {
             localStorage.setItem('accessToken', response.data.accessToken);
+            localStorage.setItem('currentUser', JSON.stringify(response.data.user));
         }
 
         return response.data; 
@@ -44,12 +46,20 @@ const login = async (userData) => {
 
 const logout = () => {
     localStorage.removeItem('accessToken'); 
+    localStorage.removeItem('currentUser');
 }
+
+const getCurrentUser = () => {
+    const raw = localStorage.getItem('currentUser');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+};
 
 const authService = {
     signup, 
     login, 
-    logout
+    logout,
+    getCurrentUser
 };
 
 export default authService;

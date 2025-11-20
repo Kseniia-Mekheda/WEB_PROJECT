@@ -10,7 +10,8 @@ const config = {
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
     JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
     REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT
+    REDIS_PORT: process.env.REDIS_PORT,
+    WORKER_CONCURRENCY: process.env.WORKER_CONCURRENCY
 };
 
 module.exports = { config };

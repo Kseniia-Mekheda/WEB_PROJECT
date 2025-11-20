@@ -11,7 +11,8 @@ const signup = async (userData) => {
     const user = await User.create({
         username,
         email, 
-        password
+        password,
+        isSuperUser: false
     }); 
 
     const payload = { id: user._id }; 
@@ -23,7 +24,8 @@ const signup = async (userData) => {
         user: {
             _id: user._id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            isSuperUser: user.isSuperUser
         }
     };
 };
@@ -43,6 +45,7 @@ const login = async (userData) => {
                 _id: user._id, 
                 username: user.username,
                 email: user.email, 
+                isSuperUser: user.isSuperUser
             }
         };
     } else {

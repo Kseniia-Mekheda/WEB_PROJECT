@@ -20,6 +20,11 @@ const userSchema = new Schema(
             required: true,
             minLength: 8,
             select: false
+        },
+        isSuperUser: {
+            type: Boolean,
+            default: false,
+            index: true
         }
     },
     {

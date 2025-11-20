@@ -63,7 +63,7 @@ const worker = new Worker('taskQueue', async (job) => {
 
   console.log(`[Worker] Job #${jobId} completed in ${durationMs}ms. Result: ${primeCount}`);
   return { primeCount, durationMs };
-}, { connection });
+}, { connection, concurrency: parseInt(config.WORKER_CONCURRENCY) || 1 });
 
 worker.on('failed', async (job, err) => {
   const reason = err?.message || '';
