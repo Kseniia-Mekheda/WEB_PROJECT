@@ -11,25 +11,8 @@
 * MUI
 
 ### :triangular_ruler: Архітектура 
-```mermaid
-architecture-beta
-    group docker(cloud)[Docker Network]
+<img width="1623" height="647" alt="image" src="https://github.com/user-attachments/assets/9758408c-6588-4d77-a208-712c487d9c80" />
 
-    service user(internet)[User]
-
-    service frontend(server)[Frontend] in docker
-    service backend(server)[Backend API] in docker
-    service redis(disk)[Redis Queue] in docker
-    service worker(server)[Workers] in docker
-    service db(database)[MongoDB] in docker
-
-    user:R -- L:frontend
-    frontend:R -- L:backend
-    backend:R -- L:redis
-    redis:R -- L:worker
-    backend:B -- T:db
-    worker:B -- T:backend
-```
 ### :loop: Sequence diagram
 ```mermaid
 sequenceDiagram
